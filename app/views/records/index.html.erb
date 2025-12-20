@@ -1,0 +1,57 @@
+<div class="table-container m-auto d-flex flex-column fs-2">
+  <%= render partial: 'datepicker' %>
+  <div class="row mb-2">
+    <div class="col-sm-3 d-flex">
+      <button class="btn btn-success fs-2 ms-2 w-25">+</button>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-12">
+      <table class="table table-striped-columns">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>
+              <label class="checkbox-label d-flex align-items-center">
+                <input type="checkbox" />
+                <span class="checkmark"></span>
+              </label>
+            </th>
+            <th>Name</th>
+            <% days_in_month.each do |day| %>
+              <th><%= day %></th>
+            <% end %>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @records.each_with_index do |record, index| %>
+            <tr>
+              <td><%= index + 1 %></td>
+              <td>
+                <label class="checkbox-label d-flex align-items-center">
+                  <input type="checkbox" />
+                  <span class="checkmark"></span>
+                </label>
+              </td>
+              <td><%= record.name %></td>
+              <% record.record_completions.each do |compl| %>
+                <td>
+                  <%= check_box_tag "completion_#{record.id}", 1, compl.completed, disabled: false %>
+                </td>
+              <% end %>
+              <td><button class="btn btn-danger">×</button></td>
+            </tr>
+          <% end %>
+        </tbody>
+        <tfoot>
+          <tr>
+            <td colspan="<%= days_in_month.size + 4 %>">
+              <%= "Total completed tasks: #{ @total_completed}" %>
+            </td>
+          </tr>
+        </tfoot>
+      </div>
+    </table>
+  </div>
+</div>

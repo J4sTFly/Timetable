@@ -1,0 +1,2 @@
+class RecordCompletionsController < ApplicationController
+end

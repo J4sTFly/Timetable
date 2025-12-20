@@ -49,6 +49,7 @@ group :development, :test do
 
   # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
   gem "rubocop-rails-omakase", require: false
+  gem "erb_lint", "~> 0.9.0"
 end
 
 group :development do
@@ -61,3 +62,8 @@ group :test do
   gem "capybara"
   gem "selenium-webdriver"
 end
+
+gem "cssbundling-rails", "~> 1.4"
+
+
+gem "htmlbeautifier", "~> 1.4", group: :development

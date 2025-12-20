@@ -11,4 +11,9 @@ Rails.application.routes.draw do
 
   # Defines the root path route ("/")
   # root "posts#index"
+  #
+  root "records#index"
+
+  resources :records, only: %i[index create update destroy]
+  resources :record_completions, only: %i[ update ]
 end
