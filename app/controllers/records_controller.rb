@@ -1,5 +1,6 @@
 class RecordsController < ApplicationController
   before_action :set_record, only: %i[update destroy]
+  before_action :set_date_range, only: %i[index]
 
   def index
     @records = Record.includes(:record_completions).where(date: @start_date..@end_date)
@@ -25,13 +26,23 @@ class RecordsController < ApplicationController
   end
 
   def destroy
-    record.destroy
+    @record.destroy
 
     redirect_to records_path, notice: "Deleted successfully."
   end
 
   def prolong_records_date
-    # TODO: implement
+    result = Records::ProlongRecordsDateService.new(ids: params[:ids]).call
+
+    render :prolong_records_date, locals: { result: }, status: result.success?  ? :ok : :unprocessable_entity
+  end
+
+  def mass_destroy
+    Record.where(id: params[:ids]).in_batches(of: 20) do |batch|
+      batch.destroy_all
+    end
+    
+    head :ok
   end
 
   private

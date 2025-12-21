@@ -14,6 +14,10 @@ Rails.application.routes.draw do
   #
   root "records#index"
 
-  resources :records, only: %i[index create update destroy]
+  resources :records, only: %i[index create update destroy] do
+    delete :mass_destroy, on: :collection
+    post :prolong_records_date, on: :collection
+  end
+
   resources :record_completions, only: %i[ update ]
 end

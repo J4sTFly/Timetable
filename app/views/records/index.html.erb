@@ -1,4 +1,4 @@
-<div class="table-container m-auto d-flex flex-column fs-2">
+<div class="table-container m-auto d-flex flex-column fs-2" data-controller="table">
   <%= render partial: 'datepicker' %>
   <div class="row mb-2">
     <div class="col-sm-3 d-flex">
@@ -13,7 +13,7 @@
             <th>#</th>
             <th>
               <label class="checkbox-label d-flex align-items-center">
-                <input type="checkbox" />
+                <input type="checkbox" id="select-all-checkbox" data-action="click->table#toggleSelection" />
                 <span class="checkmark"></span>
               </label>
             </th>
@@ -26,32 +26,48 @@
         </thead>
         <tbody>
           <% @records.each_with_index do |record, index| %>
-            <tr>
+            <tr id="record_<%= record.id %>">
               <td><%= index + 1 %></td>
               <td>
                 <label class="checkbox-label d-flex align-items-center">
-                  <input type="checkbox" />
+                  <%= check_box_tag "record_ids[]", record.id, false, 
+                      class: 'record-select-checkbox',
+                      data: { record_id: record.id } %>
                   <span class="checkmark"></span>
                 </label>
               </td>
               <td><%= record.name %></td>
-              <% record.record_completions.each do |compl| %>
-                <td>
-                  <%= check_box_tag "completion_#{record.id}", 1, compl.completed, disabled: false %>
+              <% record.record_completions.each do |completion| %>
+                <td class="text-center">
+                  <%= check_box_tag "completion_#{record.id}_#{completion.id}", 
+                      "1", 
+                      completion.completed, 
+                      class: 'day-completion-checkbox',
+                      data: {
+                        url: record_completion_path(completion.id), 
+                        method: :patch,
+                        remote: true,
+                        params: { record_completion: { completed: !completion.completed } }.to_json
+                      } %>
                 </td>
               <% end %>
-              <td><button class="btn btn-danger">×</button></td>
+              <td>
+                <%= button_to "×", 
+                    record_path(record), 
+                    method: :delete,
+                    class: 'btn btn-danger' %>
+              </td>
             </tr>
           <% end %>
         </tbody>
         <tfoot>
           <tr>
             <td colspan="<%= days_in_month.size + 4 %>">
-              <%= "Total completed tasks: #{ @total_completed}" %>
+              <%= "Total completed tasks: #{@total_completed}" %>
             </td>
           </tr>
         </tfoot>
-      </div>
-    </table>
+      </table>
+    </div>
   </div>
 </div>

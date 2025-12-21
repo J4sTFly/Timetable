@@ -1,4 +1,15 @@
-<div class="row d-flex m-auto">
-
-
+<div class="row d-flex m-auto fs-2" data-controller="datepicker">
+  <div class="col-sm-12 d-flex">
+    <button class="btn btn-dark form-control fs-2" data-action="click->datepicker#prevMonth"><<</button>
+    <%= date_select(:records, :date, 
+      {
+        selected: @start_date, 
+        discard_day: true,
+        start_year: Date.today.year - 5,
+        end_year: Date.today.year + 5,
+      },
+      {class: 'form-select fs-2'}) 
+    %>
+    <button class="btn btn-dark form-control fs-2" data-action="click->datepicker#nextMonth">>></button>
+  </div>
 </div>
