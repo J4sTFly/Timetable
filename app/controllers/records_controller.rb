@@ -4,7 +4,7 @@ class RecordsController < ApplicationController
 
   def index
     @records = Record.includes(:record_completions).where(date: @start_date..@end_date)
-    @total_completed = @records.map(&:record_completions).flatten.filter(&:completed).size
+    @total_completed = @records.map(&:record_completions).flatten.filter(&:completed?).size
   end
 
   def create
