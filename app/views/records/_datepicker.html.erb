@@ -1,6 +1,6 @@
 <div class="row d-flex m-auto fs-2" data-controller="datepicker">
   <div class="col-sm-12 d-flex">
-    <button class="btn btn-dark form-control fs-2" data-action="click->datepicker#prevMonth"><<</button>
+    <button class="btn btn-dark form-control fs-2" data-action="datepicker#prevMonth"><<</button>
     <%= date_select(:records, :date, 
       {
         selected: @start_date, 
@@ -11,6 +11,6 @@
       {class: 'form-select fs-2',
       'data-action' => "change->datepicker#updateTable"}) 
     %>
-    <button class="btn btn-dark form-control fs-2" data-action="click->datepicker#nextMonth">>></button>
+    <button class="btn btn-dark form-control fs-2" data-action="datepicker#nextMonth">>></button>
   </div>
 </div>

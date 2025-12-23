@@ -235,7 +235,7 @@ export default class extends Controller {
       }
     })
 
-    selectedRecords.map((el) => el.checked = false)
+    Array.from(selectedRecords).map((el) => el.checked = false)
     this.toggleProlongBtn()
   }
 

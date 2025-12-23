@@ -2,41 +2,39 @@ import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
   static values = { filterUrl: String }
-  static targets = ["tableContainer", "yearSelect", "monthSelect"]
+  static targets = ["tableContainer", "year", "month"]
 
 	connect() {
-		Array.from(document.querySelectorAll('select.form-select')).map((el) => { el.addEventListener('change', () => this.updateTable())})
+    const datePickers = document.querySelectorAll('select.form-select')
+    datePickers[0].dataset.datepickerTarget = 'year'
+    datePickers[1].dataset.datepickerTarget = 'month'
+
+		Array.from(datePickers).map((el) => { el.addEventListener('change', () => this.updateTable())})
 	}
 
 	prevMonth() {
-    const yearPicker = document.querySelector('#records_date_1i')
-    const monthPicker = document.querySelector('#records_date_2i')
-
-    const year = parseInt(yearPicker.value)
-    const prevMonth = parseInt(monthPicker.value) - 1
+    const year = parseInt(this.yearTarget.value)
+    const prevMonth = parseInt(this.monthTarget.value) - 1
     
     if (prevMonth === 0) {
-      yearPicker.value = (year - 1).toString()
-      monthPicker.value = "12"
+      this.yearTarget.value = (year - 1).toString()
+      this.monthTarget.value = "12"
     } else {
-      monthPicker.value = `${prevMonth}`
+      this.monthTarget.value = `${prevMonth}`
     }
 
     this.updateTable()
   }
 
   nextMonth() {
-    const yearPicker = document.querySelector('#records_date_1i')
-    const monthPicker = document.querySelector('#records_date_2i')
-  
-    const year = parseInt(yearPicker.value)
-    const nextMonth = parseInt(monthPicker.value) +1
+    const year = parseInt(this.yearTarget.value)
+    const nextMonth = parseInt(this.monthTarget.value) +1
 
     if (nextMonth >= 13) {
-      yearPicker.value = (year + 1).toString()
-      monthPicker.value = "1"
+      this.yearTarget.value = (year + 1).toString()
+      this.monthTarget.value = "1"
     } else {
-      monthPicker.value = `${nextMonth}`
+      this.monthTarget.value = `${nextMonth}`
     }
 
     this.updateTable()
@@ -58,7 +56,7 @@ export default class extends Controller {
   }
 
   cacheDateValues() {
-    document.cookie = `year=${document.querySelector('#records_date_1i').value}`
-    document.cookie = `month=${document.querySelector('#records_date_2i').value}`
+    document.cookie = `year=${this.yearTarget.value}`
+    document.cookie = `month=${this.monthTarget.value}`
   }
 }

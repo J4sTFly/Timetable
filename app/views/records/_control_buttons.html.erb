@@ -1,8 +1,8 @@
 <div class="row mb-2">
   <div class="col-sm-3 d-flex">
-    <button id="newRecordBtn" class="btn btn-success fs-2 ms-2 w-25" data-action="click->table#new" data-url="<%= new_record_path %>" data-date="<%= @start_date %>">+</button>
+    <button id="newRecordBtn" class="btn btn-success fs-2 ms-2 w-25" data-action="table#new" data-url="<%= new_record_path %>" data-date="<%= @start_date %>">+</button>
   </div>
   <div class="col-sm-9 text-end">
-    <button id="prolongBtn" class="btn btn-primary disabled" data-action="click->table#prolongSelected" data-url="<%= prolong_records_date_records_path %>" data-date="<%= @start_date + 1.month %>">Prolong Selected Tasks</button>
+    <button id="prolongBtn" class="btn btn-primary disabled" data-action="table#prolongSelected" data-url="<%= prolong_records_date_records_path %>" data-date="<%= @start_date + 1.month %>">Prolong Selected Tasks</button>
   </div>
 </div>
