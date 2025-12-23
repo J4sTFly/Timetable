@@ -10,7 +10,7 @@ export default class extends Controller {
       }
     })
   }
-  
+
   toggleSelectAll(e, element) {
     const records = Array.from(document.querySelectorAll('input.record-select-checkbox'))
     if (e.target.checked) {
@@ -213,18 +213,33 @@ export default class extends Controller {
     delete element.dataset.initialName
   }
 
-  reorder() {
+  prolongSelected(e) {
+    const selectedRecords = document.querySelectorAll('.record-select-checkbox:checked')
+    const selectedRecordIds = Array.from(selectedRecords).map(el => el.dataset.recordId)
 
+    const element = e.target
+    const url = element.dataset.url
+
+    fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
+      },
+      body: JSON.stringify({ records: { ids: selectedRecordIds, date: element.dataset.date } })
+    }).then((response) => {
+      if (response.ok) {
+        return
+      } else {
+        alert('An error occured')
+      }
+    })
+
+    selectedRecords.map((el) => el.checked = false)
+    this.toggleProlongBtn()
   }
 
-  _updateTable() {
+  
 
-  }
-
-  prolongSelected() {
-    const selectedRecords = document.querySelector('.record-select-checkbox:checked')
-    const selectedRecordIds = Array.from(selectedRecords).map(el => el.dataset.id)
-
-    fetch()
-  }
+  reorder() {}
 }

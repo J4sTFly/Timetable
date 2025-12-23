@@ -1,10 +1,14 @@
 class RecordsController < ApplicationController
+  before_action :set_date_range, only: %i[index filter]
   before_action :set_record, only: %i[update destroy]
-  before_action :set_records, only: %i[index]
-  before_action :set_date_range, only: %i[index]
+  before_action :set_records, only: %i[index filter]
+  before_action :set_totals, only: %i[index filter]
 
   def index
-    @total_completed = @records.map(&:record_completions).flatten.filter(&:completed?).size
+  end
+
+  def filter
+    render partial: 'table'
   end
 
   def new
@@ -14,7 +18,7 @@ class RecordsController < ApplicationController
   end
 
   def create
-    new_record = Records::CreateService.new.call(**build_params(record_params))
+    new_record = Records::CreateService.new.call(record_params)
 
     if new_record.valid?
       set_date_range
@@ -40,9 +44,9 @@ class RecordsController < ApplicationController
   end
 
   def prolong_records_date
-    result = Records::ProlongRecordsDateService.new(ids: params[:ids]).call
+    prolonged_successfully = Records::ProlongService.new.call(prolong_params[:ids], prolong_params[:date])
 
-    render :prolong_records_date, locals: { result: }, status: result.success?  ? :ok : :unprocessable_entity
+    prolonged_successfully ? (head :ok) : (head :unprocessable_entity)
   end
 
   def mass_destroy
@@ -56,13 +60,23 @@ class RecordsController < ApplicationController
   private
 
   def set_records
-    @records ||= Record.includes(:record_completions).where(date: @start_date..@end_date)
+    @records = Record.includes(:record_completions).where(date: @start_date..@end_date).order(order: :asc)
+  end
+
+  def set_totals
+    @total_completed = @records.map(&:record_completions).flatten.filter(&:completed?).size
   end
 
   def set_date_range
-    today = Date.current
-    @start_date = params[:start_date].present? ? Date.parse(params[:start_date]) : today.beginning_of_month
-    @end_date = params[:end_date].present? ? Date.parse(params[:end_date]) : today.end_of_month
+    if cookies[:year].present? && cookies[:month].present?
+      year, month = cookies[:year].to_i, cookies[:month].to_i
+      @start_date = Date.new(year, month, 1)
+      @end_date = Date.new(year, month, Time.days_in_month(month, year))
+    else
+      today = Date.current
+      @start_date = today.beginning_of_month
+      @end_date = today.end_of_month
+    end
   end
 
   def set_record
@@ -73,5 +87,9 @@ class RecordsController < ApplicationController
 
   def record_params
     params.require(:record).permit :name, :date, :order
+  end
+
+  def prolong_params
+    params.fetch(:records, {}).permit(:date, ids: [])
   end
 end

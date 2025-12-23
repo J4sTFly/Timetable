@@ -15,7 +15,7 @@ Rails.application.routes.draw do
   root "records#index"
 
   resources :records, only: %i[index new create update destroy] do
-    delete :mass_destroy, on: :collection
+    get :filter, on: :collection
     post :prolong_records_date, on: :collection
   end
 

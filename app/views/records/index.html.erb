@@ -1,15 +1,11 @@
 <%= hidden_field_tag :start_date, @start_date %> 
-<div class="table-container m-auto d-flex flex-column fs-2" data-controller="table">
+<%= hidden_field_tag :filter_url, filter_records_path %>
+<div class="m-auto d-flex flex-column fs-2" data-controller="table">
   <%= render partial: 'datepicker' %>
   <div class="errors row mb-2"></div>
-  <div class="row mb-2">
-    <div class="col-sm-3 d-flex">
-      <button id="newRecordBtn" class="btn btn-success fs-2 ms-2 w-25" data-action="click->table#new" data-url="<%= new_record_path %>" data-date="<%= @start_date %>">+</button>
-    </div>
-    <div class="col-sm-9 text-end">
-      <button id="prolongBtn" class="btn btn-primary disabled" data-action="click->table#prolongSelected">Prolong Selected Tasks</button>
-    </div>
-  </div>
+  <%= render partial: 'control_buttons' %>
   <div class="new-form-container fs-2"></div>
-  <%= render partial: 'table' %>
+  <div class="table-container">
+    <%= render partial: 'table' %>
+  </div>
 </div>

@@ -25,7 +25,7 @@ module Records
     def generate_completions_for_month(record)
       start_date = record.date
       days_in_month = Time.days_in_month(start_date.month, start_date.year)
-      
+
       (1..days_in_month).map do |day|
         {
           date: Date.new(start_date.year, start_date.month, day),
