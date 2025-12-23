@@ -1,0 +1,9 @@
+<div class="card border-danger">
+  <div class="card-body">
+    <ul>
+      <% obj.errors.full_messages.each do |error_message| %>
+        <li><%= error_message.html_safe %></li>
+      <% end %>
+    </ul>
+  </div>
+</div>

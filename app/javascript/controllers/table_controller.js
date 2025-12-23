@@ -2,8 +2,14 @@ import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
   static targets = [ 'table' ]
-  
-  editingElement = null;
+
+  connect() {
+    document.addEventListener('keydown', (e) => {
+      if (e.ctrlKey && e.key === "i") {
+        this.new(document.querySelector('#newRecordBtn'))
+      }
+    })
+  }
   
   toggleSelectAll(e, element) {
     const records = Array.from(document.querySelectorAll('input.record-select-checkbox'))
@@ -49,17 +55,79 @@ export default class extends Controller {
     document.querySelector('.record-select-checkbox:checked') ? btn.classList.remove('disabled') : btn.classList.add('disabled') 
   }
 
-  prolongSelected() {
-    const selectedRecords = document.querySelector('.record-select-checkbox:checked')
-    const selectedRecordIds = Array.from(selectedRecords).map(el => el.dataset.id)
+  new(e) {
+    const _this = this
+    const url = e?.target?.dataset?.url || e?.dataset?.url
+    const newFormContainer = document.querySelector('div.new-form-container')
 
-    fetch()
+    fetch(url, {
+      method: 'GET'
+    }).then(response => response.text())
+    .then((html) => {
+      newFormContainer.innerHTML = html
+      const input = newFormContainer.querySelector('input')
+      input.focus()
+
+      input.addEventListener('keyup', (e) => {
+        if (e.key === 'Escape') {
+          _this.cancelNew(newFormContainer)
+        }
+      })
+      input.addEventListener('blur', (e) => _this.cancelNew(newFormContainer))
+
+      input.addEventListener('keyup', (e) => {
+        if (e.key === 'Enter') {
+          _this.create(input)
+        }
+      })
+    })
   }
 
-  new() {
+  cancelNew(element) {
+    element.innerHTML = ''
   }
 
-  create() {
+  create(input) {
+    const _this = this
+    input.disabled = true
+    const url = input.dataset.url
+    const date = document.querySelector('#start_date').value
+
+    fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
+      },
+      body: JSON.stringify({ record: { name: input.value, date: date } })
+    }).then((response) => {
+      if (response.ok) {
+        html = response.text().then(html => {
+          const table = document.querySelector('#tableRow')
+          table.innerHTML = html
+          input.disabled = false
+          _this.cancelNew(input)
+        })
+
+        return null
+      }
+  
+      return response.text()
+    }).then((html) => {
+      if (html) {
+        const errorsContainer = document.querySelector('div.errors')
+        const div = document.createElement('div');
+        div.class="row"
+        div.innerHTML = html;
+        errorsContainer.appendChild(div);
+          
+        setTimeout(() => { 
+          errorsContainer.removeChild(div);
+        }, 5000);
+      }
+    }).catch((error) => {
+      console.error('Error:', error)
+    })
   }
 
   editRecord(e) {
@@ -91,27 +159,48 @@ export default class extends Controller {
   }
 
   saveEdit(element, newValue) {
-    const _this = this
-    const url = element.dataset['update-url']
+    const url = element.dataset.updateUrl;
+    const input = element.querySelector('input');
     input.disabled = true;
 
     fetch(url, {
       headers: {
         'Content-Type': 'application/json',
-        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]')
+        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
       },
-      body: JSON.stringify({ record: { name: newValue }}).then(
-        (response) => {
-          if (response.ok) {
-          } else {
-            // TODO: show Toast with error messages
-          }
-
-          input.disabled = false;
-        }
-      )
+      method: 'PATCH',
+      body: JSON.stringify({ record: { name: newValue } })
     })
-    
+    .then((response) => {
+      if (response.ok) {
+        element.dataset.initialName = input.value;
+        this.cancelEdit(element);
+        return null;
+      } else {
+        return response.text();
+      }
+    })
+    .then((body) => {
+      if (body) {
+        const errorsContainer = document.querySelector('div.errors');
+        if (errorsContainer) {
+          const div = document.createElement('div');
+          div.class="row"
+          div.innerHTML = body;
+          errorsContainer.appendChild(div);
+          
+          setTimeout(() => { 
+            errorsContainer.removeChild(div);
+          }, 5000);
+        }
+      }
+    })
+    .catch((error) => {
+      console.error('Error:', error);
+    })
+    .finally(() => {
+      input.disabled = false;
+    });
   }
 
   cancelEdit(element) {
@@ -130,5 +219,12 @@ export default class extends Controller {
 
   _updateTable() {
 
+  }
+
+  prolongSelected() {
+    const selectedRecords = document.querySelector('.record-select-checkbox:checked')
+    const selectedRecordIds = Array.from(selectedRecords).map(el => el.dataset.id)
+
+    fetch()
   }
 }

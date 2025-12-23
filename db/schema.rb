@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_12_20_054054) do
+ActiveRecord::Schema[8.0].define(version: 2025_12_23_000033) do
   create_table "record_completions", force: :cascade do |t|
     t.integer "record_id", null: false
     t.boolean "completed", default: false
@@ -26,6 +26,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_20_054054) do
     t.date "date", default: "2025-12-01"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["date", "order"], name: "index_records_on_date_and_order", unique: true
     t.index ["date"], name: "index_records_on_date"
   end
 

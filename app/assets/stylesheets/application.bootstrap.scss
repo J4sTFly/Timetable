@@ -5,6 +5,10 @@ body {
   background-color: #555;
 }
 
+td {
+  min-width: 5%;
+}
+
 .checkbox-label {
   display: flex;
   align-items: center;

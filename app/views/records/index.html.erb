@@ -1,71 +1,15 @@
+<%= hidden_field_tag :start_date, @start_date %> 
 <div class="table-container m-auto d-flex flex-column fs-2" data-controller="table">
   <%= render partial: 'datepicker' %>
+  <div class="errors row mb-2"></div>
   <div class="row mb-2">
     <div class="col-sm-3 d-flex">
-      <button class="btn btn-success fs-2 ms-2 w-25">+</button>
+      <button id="newRecordBtn" class="btn btn-success fs-2 ms-2 w-25" data-action="click->table#new" data-url="<%= new_record_path %>" data-date="<%= @start_date %>">+</button>
     </div>
     <div class="col-sm-9 text-end">
-      <button id="prolongBtn" class="btn btn-secondary disabled" data-action="click->table#prolongSelected">Prolong Selected Tasks</button>
+      <button id="prolongBtn" class="btn btn-primary disabled" data-action="click->table#prolongSelected">Prolong Selected Tasks</button>
     </div>
   </div>
-  <div class="row">
-    <div class="col-sm-12">
-      <table class="table table-striped-columns">
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>
-              <%= check_box_tag "select_all", "checkbox", class: "form-check-input", data: { action: 'click->table#toggleSelectAll' } %>
-            </th>
-            <th>Name</th>
-            <% days_in_month.each do |day| %>
-              <th class="text-center"><%= day %></th>
-            <% end %>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          <% @records.each_with_index do |record, index| %>
-            <tr id="record_<%= record.id %>">
-              <td><%= index + 1 %></td>
-              <td>
-                <%= check_box_tag "record_ids_#{record.id}", record.id, false, 
-                    class: 'record-select-checkbox form-check-input',
-                    data: { 
-                      record_id: record.id,
-                      action: 'click->table#toggleProlongBtn'
-                    } %>
-              </td>
-              <td><span data-action="click->table#editRecord" data-update-url="<%= record_path(id: record.id) %>"><%= record.name %></span></td>
-              <% record.record_completions.each do |completion| %>
-                <td class="text-center">
-                  <%= check_box_tag "completion_#{record.id}_#{completion.id}", 
-                      "1", 
-                      completion.completed,
-                      class: 'form-check-input completion-checkbox',
-                      data: {
-                        action: 'click->table#updateCompletion',
-                        url: record_completion_path(completion.id)
-                      } %>
-                </td>
-              <% end %>
-              <td>
-                <%= button_to "×", 
-                    record_path(record), 
-                    method: :delete,
-                    class: 'btn btn-danger' %>
-              </td>
-            </tr>
-          <% end %>
-        </tbody>
-        <tfoot>
-          <tr>
-            <td colspan="<%= days_in_month.size + 4 %>">
-              Total completed tasks: <b id="completed-tasks"><%= @total_completed %></b>
-            </td>
-          </tr>
-        </tfoot>
-      </table>
-    </div>
-  </div>
+  <div class="new-form-container fs-2"></div>
+  <%= render partial: 'table' %>
 </div>

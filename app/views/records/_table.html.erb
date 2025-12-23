@@ -1,0 +1,62 @@
+<div class="row" id="tableRow">
+  <div class="col-sm-12">
+    <table class="table table-striped-columns text-center">
+      <thead>
+        <tr>
+          <th></th>
+          <th>#</th>
+          <th>
+            <%= check_box_tag "select_all", "checkbox", class: "form-check-input", data: { action: 'click->table#toggleSelectAll' } %>
+          </th>
+          <th>Name</th>
+          <% days_in_month.each do |day| %>
+            <th class="text-center"><%= day %></th>
+          <% end %>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @records.each_with_index do |record, index| %>
+          <tr id="record_<%= record.id %>">
+            <td data-order="<%= record.order %>"><i class="fas fa-bars"></i></td>
+            <td><%= index + 1 %></td>
+            <td>
+              <%= check_box_tag "record_ids_#{record.id}", record.id, false, 
+                  class: 'record-select-checkbox form-check-input',
+                  data: { 
+                    record_id: record.id,
+                    action: 'click->table#toggleProlongBtn'
+                  } %>
+            </td>
+            <td><span data-action="click->table#editRecord" data-update-url="<%= record_path(id: record.id) %>"><%= record.name %></span></td>
+            <% record.record_completions.each do |completion| %>
+              <td class="text-center">
+                <%= check_box_tag "completion_#{record.id}_#{completion.id}", 
+                    "1", 
+                    completion.completed,
+                    class: 'form-check-input completion-checkbox',
+                    data: {
+                      action: 'click->table#updateCompletion',
+                      url: record_completion_path(completion.id)
+                    } %>
+              </td>
+            <% end %>
+            <td>
+              <%= button_to "×", 
+                  record_path(record), 
+                  method: :delete,
+                  class: 'btn btn-danger' %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+      <tfoot class="text-start">
+        <tr>
+          <td colspan="<%= days_in_month.size + 5 %>">
+            Total completed tasks: <b id="completed-tasks"><%= @total_completed %></b>
+          </td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+</div>
